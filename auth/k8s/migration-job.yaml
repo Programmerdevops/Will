@@ -1,0 +1,46 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: auth-migration
+  namespace: insurance-app
+spec:
+  backoffLimit: 2
+  template:
+    spec:
+      containers:
+        - name: migrate
+          image: postgres:15
+          command:
+            - psql
+          args:
+            - "-h"
+            - "pgsql-svc.insurance-app.svc.cluster.local"
+            - "-U"
+            - "$(POSTGRES_USER)"
+            - "-d"
+            - "$(POSTGRES_DB)"
+            - "-c"
+            - |
+              CREATE TABLE IF NOT EXISTS users (
+                id SERIAL PRIMARY KEY,
+                username VARCHAR(100) UNIQUE NOT NULL,
+                password VARCHAR(255) NOT NULL,
+                created_at TIMESTAMP DEFAULT NOW()
+              );
+          env:
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: pgsql-secret
+                  key: POSTGRES_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: pgsql-secret
+                  key: POSTGRES_PASSWORD
+            - name: POSTGRES_DB
+              valueFrom:
+                configMapKeyRef:
+                  name: pgsql-config
+                  key: POSTGRES_DB
+      restartPolicy: Never

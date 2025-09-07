@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth-service
+  namespace: insurance-app
+  labels:
+    app: auth
+spec:
+  selector:
+    app: auth
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 3000
+  type: ClusterIP
