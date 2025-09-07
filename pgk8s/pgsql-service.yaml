@@ -1,0 +1,28 @@
+# Headless service
+apiVersion: v1
+kind: Service
+metadata:
+  name: pgsql
+  namespace: insurance-app
+spec:
+  clusterIP: None
+  selector:
+    app: pgsql
+  ports:
+    - port: 5432
+      targetPort: postgres
+
+---
+# ClusterIP service
+apiVersion: v1
+kind: Service
+metadata:
+  name: pgsql-svc
+  namespace: insurance-app
+spec:
+  type: ClusterIP
+  selector:
+    app: pgsql
+  ports:
+    - port: 5432
+      targetPort: postgres

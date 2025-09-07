@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pgsql-config
+  namespace: insurance-app
+data:
+  POSTGRES_DB: insurance
